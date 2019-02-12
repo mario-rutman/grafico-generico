@@ -1,0 +1,136 @@
+---
+title: "Gráfico Genérico"
+author: "Mário Rutman"
+date: "12/02/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Gráfico Genérico.
+O objetivo é ter uma espécie de gráfico que sirva para começar com adiantamento qualquer gráfico.
+Ao invés de tentar descobrir o script irei retirar os que não interessam.
+
+Os pacotes que quase sempre uso.
+```{r}
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(DT)
+library(extrafont)
+```
+
+Dois comandos que fazem diferença: o primeiro coloca os dados em português brasileiro, para dias, meses, vírgula etc; o segundo retira a notação científica de números, quando são expressos por potências de 10.
+```{r}
+Sys.setlocale("LC_ALL", "pt_BR.UTF-8")
+options(scipen=999)
+```
+
+Começa-se por uma tabela que sofrerá as tranformações para arrumá-la, seu nome será untidy_data. E resultado será tidy_data.
+```{r}
+tidy_data <- untidy_data %>% filter() %>% select() %>% gather() ou spread() %>% 
+  mutate() %>% group_by() %>% summarise() %>% arrange() %>% ungroup()
+#sempre fazer o ungroup() senão a tabela trava.
+```
+
+A partir da tidy_data começamos a fazer a tranformações necessárias para então fazer o gráfico.
+```{r}
+tidy_data %>% group_by() %>% summarise() %>% 
+  ggplot(data = tidy_data, mapping = aes(x = , y = , color = , shape = , size =)) + # agrupamento de uma variável representada por cor.
+  # Começando pelo título, subtítulo, fonte, nome dos eixos e nome da legenda.
+  labs(title = "Relationship between wages and experience",
+       subtitle = "Current Population Survey",
+       caption = "fonte: http://mosaic-web.org/",
+       x = " Years of Experience",
+       y = "Hourly Wage",
+       color = "Gender") +
+  geom_histogram() +
+  geom_density() +
+  geom_point(color = "cornflowerblue", 
+             alpha = .7, # opacidade
+             size = 3) +
+  geom_dotplot(fill = "gold", 
+               color = "black") +
+  geom_boxplot(size=1,
+               outlier.shape = 1,
+               outlier.color = "black",
+               outlier.size  = 3) +
+  geom_col() +
+  geom_line(size = 1.5, 
+            color = "lightgrey", linetype = 1) +
+  geom_bar() +
+  geom_bar(stat = "identity") +
+  geom_bar(position = "stack") + # categorias empilhadas
+  geom_bar(position = "dodge") + # uma coluna do lado da outra
+   geom_bar(position = position_dodge(preserve = "single")) + 
+  geom_bar(position = "fill") + # categorias empilhadas por proporção até 100%.
+  geom_errorbar(aes(ymin = mean - se, 
+                    ymax = mean + se), 
+                width = .1) + 
+  geom_text(aes(label = c("Assistant\nProfessor",
+                         "Associate\nProfessor",
+                          "Full\nProfessor")), # quando queremosmais de uma linha.
+            vjust=-0.5) + # pode ter mais de 1 geom_text.
+  # Em categoria empilhada coloca o label em cada uma delas.
+  geom_text(aes(label = lbl), 
+  size = 3, 
+  position = position_stack(vjust = 0.5)) + 
+  scale_x_continuous(breaks = seq(0, 60, 10),
+                     limits = c(50000, 250000),
+                     label = scales::percent) +
+  scale_y_continuous(breaks = seq(0, 30, 5),
+                     label = scales::dollar,
+                     limits = c(50000, 250000)) +
+  scale_x_discrete(limits = c("pickup", "suv", "minivan", # Scale para categorias.
+                             "midsize", "compact", "subcompact", 
+                             "2seater"),
+                   labels = c("Pickup\nTruck", "Sport Utility\nVehicle", 
+                              "Minivan", "Mid-size", "Compact", 
+                              "Subcompact", "2-Seater")) + 
+  scale_x_date(date_breaks = "5 years",
+               date_labels = "%b-%y") + 
+
+  #   Symbol	Meaning	              Example
+#       %d	day as a number (0-31)	01-31
+#       %a	abbreviated weekday	    Mon
+#       %A	unabbreviated weekday	  Monday
+#       %m	month (00-12)	          00-12
+#       %b	abbreviated month	      Jan
+#       %B	unabbreviated month	    January
+#       %y	2-digit year	          07
+#       %Y	4-digit year	          2007
+  
+  scale_color_manual(values = c("indianred3", 
+                                "cornflowerblue")) +
+    coord_flip() +
+  theme(text = element_text(size = 16, family = "Helvetica"), #tamanho e tipo de letra
+        theme(legend.position = “top”, “right”, “bottom”, “left”, “none”,
+        legend.title = element_text(colour = 'red', angle = 45, size = 10, hjust = 3, vjust = 7, face = 'italic',
+                                    ),
+        )
+```
+
+The table below gives the formatting specifications for date values.
+
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
