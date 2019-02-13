@@ -9,12 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Gráfico Genérico.
+## Gráfico Genérico.
 O objetivo é ter uma espécie de gráfico que sirva para começar com adiantamento qualquer gráfico.
-Ao invés de tentar descobrir o script irei retirar os que não interessam.
+Ao invés de tentar descobrir o script, por meio de #(comentário), irei retirar os que não interessam.
 
 Os pacotes que quase sempre uso.
-```{r}
+```{r, include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -24,31 +24,40 @@ library(extrafont)
 ```
 
 Dois comandos que fazem diferença: o primeiro coloca os dados em português brasileiro, para dias, meses, vírgula etc; o segundo retira a notação científica de números, quando são expressos por potências de 10.
-```{r}
+
+```{r, include=FALSE}
 Sys.setlocale("LC_ALL", "pt_BR.UTF-8")
 options(scipen=999)
 ```
 
-Começa-se por uma tabela que sofrerá as tranformações para arrumá-la, seu nome será untidy_data. E resultado será tidy_data.
-```{r}
-tidy_data <- untidy_data %>% filter() %>% select() %>% gather() ou spread() %>% 
-  mutate() %>% group_by() %>% summarise() %>% arrange() %>% ungroup()
-#sempre fazer o ungroup() senão a tabela trava.
-```
+## De dados desarrumados para arrumados: un_tidy_data para tidy_data.
+Começa-se por uma tabela que sofrerá as tranformações para arrumá-la, seu nome será un_tidy_data. E resultado será tidy_data.
 
+tidy_data <- un_tidy_data %>% filter() %>% select() %>% gather() ou spread() %>% 
+  mutate() %>% group_by() %>% summarise() %>% arrange() %>% ungroup()
+Sempre fazer o ungroup() senão a tabela trava.
+
+## As transformações para um gráfico específico.
 A partir da tidy_data começamos a fazer a tranformações necessárias para então fazer o gráfico.
-```{r}
+
 tidy_data %>% group_by() %>% summarise() %>% 
-  ggplot(data = tidy_data, mapping = aes(x = , y = , color = , shape = , size =)) + # agrupamento de uma variável representada por cor.
-  # Começando pelo título, subtítulo, fonte, nome dos eixos e nome da legenda.
-  labs(title = "Relationship between wages and experience",
+
+ggplot(data = tidy_data, mapping = aes(x = , y = , color = , shape = , size = )) + 
+
+## Começando pelo título, subtítulo, fonte, nome dos eixos e nome da legenda.
+
+labs(title = "Relationship between wages and experience",
        subtitle = "Current Population Survey",
        caption = "fonte: http://mosaic-web.org/",
-       x = " Years of Experience",
+       x = "Years of Experience",
        y = "Hourly Wage",
-       color = "Gender") +
+       color = "Gender" É o título da legenda que é criada pela cor no aes) +
+       
+## Partindo para os geom_.       
   geom_histogram() +
+  
   geom_density() +
+  
   geom_point(color = "cornflowerblue", 
              alpha = .7, # opacidade
              size = 3) +
@@ -58,62 +67,126 @@ tidy_data %>% group_by() %>% summarise() %>%
                outlier.shape = 1,
                outlier.color = "black",
                outlier.size  = 3) +
+               
   geom_col() +
+  
   geom_line(size = 1.5, 
             color = "lightgrey", linetype = 1) +
+            
   geom_bar() +
+  
   geom_bar(stat = "identity") +
+  
   geom_bar(position = "stack") + # categorias empilhadas
+  
   geom_bar(position = "dodge") + # uma coluna do lado da outra
-   geom_bar(position = position_dodge(preserve = "single")) + 
+  
+  geom_bar(position = position_dodge(preserve = "single")) + 
+  
   geom_bar(position = "fill") + # categorias empilhadas por proporção até 100%.
+  
   geom_errorbar(aes(ymin = mean - se, 
                     ymax = mean + se), 
                 width = .1) + 
+                
   geom_text(aes(label = c("Assistant\nProfessor",
                          "Associate\nProfessor",
-                          "Full\nProfessor")), # quando queremosmais de uma linha.
+                          "Full\nProfessor")), quando queremos mais de uma linha.
             vjust=-0.5) + # pode ter mais de 1 geom_text.
-  # Em categoria empilhada coloca o label em cada uma delas.
-  geom_text(aes(label = lbl), 
-  size = 3, 
-  position = position_stack(vjust = 0.5)) + 
+            
+  Em categoria empilhada coloca o label em cada uma delas.
+  geom_text(aes(label = lbl), size = 3, position = position_stack(vjust = 0.5)) + 
+  
+## Tratando das escalas dos eixos.
+  
   scale_x_continuous(breaks = seq(0, 60, 10),
                      limits = c(50000, 250000),
                      label = scales::percent) +
+                     
   scale_y_continuous(breaks = seq(0, 30, 5),
                      label = scales::dollar,
                      limits = c(50000, 250000)) +
+                     
   scale_x_discrete(limits = c("pickup", "suv", "minivan", # Scale para categorias.
                              "midsize", "compact", "subcompact", 
                              "2seater"),
                    labels = c("Pickup\nTruck", "Sport Utility\nVehicle", 
                               "Minivan", "Mid-size", "Compact", 
                               "Subcompact", "2-Seater")) + 
+                              
   scale_x_date(date_breaks = "5 years",
                date_labels = "%b-%y") + 
+               
 
-  #   Symbol	Meaning	              Example
-#       %d	day as a number (0-31)	01-31
-#       %a	abbreviated weekday	    Mon
-#       %A	unabbreviated weekday	  Monday
-#       %m	month (00-12)	          00-12
-#       %b	abbreviated month	      Jan
-#       %B	unabbreviated month	    January
-#       %y	2-digit year	          07
-#       %Y	4-digit year	          2007
-  
-  scale_color_manual(values = c("indianred3", 
+Symbol	Meaning	              Example
+ %d	day as a number (0-31)	01-31
+ %a	abbreviated weekday	    Mon
+ %A	unabbreviated weekday	  Monday
+ %m	month (00-12)	          00-12
+ %b	abbreviated month	      Jan
+ %B	unabbreviated month	    January
+ %y	2-digit year	          07
+ %Y	4-digit year	          2007
+
+scale_color_manual(values = c("indianred3", 
                                 "cornflowerblue")) +
-    coord_flip() +
-  theme(text = element_text(size = 16, family = "Helvetica"), #tamanho e tipo de letra
-        theme(legend.position = “top”, “right”, “bottom”, “left”, “none”,
-        legend.title = element_text(colour = 'red', angle = 45, size = 10, hjust = 3, vjust = 7, face = 'italic',
-                                    ),
-        )
-```
+                                
+coord_flip() + 
+  
 
-The table below gives the formatting specifications for date values.
+## Agora o theme.
+Parece bem confuso e longo, mas usamos poucos comandos, o que facilita.
+  
+theme(text = element_text(size = 16, family = "Helvetica"), # tamanho e tipo de letra
+
+legend.position = “top”, “right”, “bottom”, “left”, “none”,
+
+legend.title = element_text(colour = 'red', angle = 45, size = 10, hjust = 3, vjust = 7, face = 'italic'),
+
+legend.title = element_blank()
+
+theme(line, rect, text, title, aspect.ratio, 
+
+**eixos**
+
+axis.title, axis.title.x,
+  axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left,
+  axis.title.y.right, axis.text, axis.text.x, axis.text.x.top,
+  axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right,
+  axis.ticks, axis.ticks.x, axis.ticks.x.top, axis.ticks.x.bottom,
+  axis.ticks.y, axis.ticks.y.left, axis.ticks.y.right, axis.ticks.length,
+  axis.line, axis.line.x, axis.line.x.top, axis.line.x.bottom, axis.line.y,
+  axis.line.y.left, axis.line.y.right,
+  
+**legenda**
+
+legend.background, legend.margin,
+  legend.spacing, legend.spacing.x, legend.spacing.y, legend.key,
+  legend.key.size, legend.key.height, legend.key.width, legend.text,
+  legend.text.align, legend.title, legend.title.align, legend.position,
+  legend.direction, legend.justification, legend.box, legend.box.just,
+  legend.box.margin, legend.box.background, legend.box.spacing
+  
+**linhas de grade e contorno do gráfico**
+
+  panel.background, panel.border, panel.spacing, panel.spacing.x,
+  panel.spacing.y, panel.grid, panel.grid.major, panel.grid.minor,
+  panel.grid.major.x, panel.grid.major.y, panel.grid.minor.x,
+  panel.grid.minor.y, panel.ontop
+  
+**elementos em volta do gráfico**
+
+  plot.background, plot.title,
+  plot.subtitle, plot.caption, plot.tag, plot.tag.position, plot.margin
+  
+**o quadro do facet_wrap**
+
+  strip.background, strip.background.x, strip.background.y,
+  strip.placement, strip.text, strip.text.x, strip.text.y,
+  strip.switch.pad.grid, strip.switch.pad.wrap, ..., complete = FALSE,
+  validate = TRUE)
+
+
 
 
 
