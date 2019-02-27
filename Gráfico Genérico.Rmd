@@ -21,6 +21,7 @@ library(lubridate)
 library(readr)
 library(DT)
 library(extrafont)
+library(colortools)
 ```
 
 Dois comandos que fazem diferença: o primeiro coloca os dados em português brasileiro, para dias, meses, vírgula etc; o segundo retira a notação científica de números, quando são expressos por potências de 10.
@@ -53,7 +54,8 @@ labs(title = "Relationship between wages and experience",
        y = "Hourly Wage",
        color = "Gender" É o título da legenda que é criada pela cor no aes) +
        
-## Partindo para os geom_.       
+## Partindo para os geom_.
+
   geom_histogram() +
   
   geom_density() +
@@ -61,8 +63,10 @@ labs(title = "Relationship between wages and experience",
   geom_point(color = "cornflowerblue", 
              alpha = .7, # opacidade
              size = 3) +
+             
   geom_dotplot(fill = "gold", 
                color = "black") +
+               
   geom_boxplot(size=1,
                outlier.shape = 1,
                outlier.color = "black",
@@ -88,14 +92,29 @@ labs(title = "Relationship between wages and experience",
   geom_errorbar(aes(ymin = mean - se, 
                     ymax = mean + se), 
                 width = .1) + 
-                
+  
+  O geom_text produz texto no gráfico.
+  
   geom_text(aes(label = c("Assistant\nProfessor",
+                         "Associate\nProfessor",
+                          "Full\nProfessor")), quando queremos mais de uma linha.
+            vjust=-0.5) + # pode ter mais de 1 geom_text.
+            
+  O geom_label faz um quadro retangular com o texto dentro.
+            
+  geom_label(aes(label = c("Assistant\nProfessor",
                          "Associate\nProfessor",
                           "Full\nProfessor")), quando queremos mais de uma linha.
             vjust=-0.5) + # pode ter mais de 1 geom_text.
             
   Em categoria empilhada coloca o label em cada uma delas.
   geom_text(aes(label = lbl), size = 3, position = position_stack(vjust = 0.5)) + 
+  
+## Cor.
+
+Para criar cores complementares esta função é fundamental: wheel("nome da cor", num = quantidade de cores complementares que desejamos). É do pacote colortools.
+
+
   
 ## Tratando das escalas dos eixos.
   
@@ -105,7 +124,9 @@ labs(title = "Relationship between wages and experience",
                      
   scale_y_continuous(breaks = seq(0, 30, 5),
                      label = scales::dollar,
-                     limits = c(50000, 250000)) +
+                     limits = c(50000, 250000)) + 
+                     
+  scale_x_continuous(labels = scales::percent, breaks = seq(0, 1, 0.1)) +
                      
   scale_x_discrete(limits = c("pickup", "suv", "minivan", # Scale para categorias.
                              "midsize", "compact", "subcompact", 
@@ -117,16 +138,29 @@ labs(title = "Relationship between wages and experience",
   scale_x_date(date_breaks = "5 years",
                date_labels = "%b-%y") + 
                
+  scale_x_percent(breaks = seq(0:1, 0.1), labels = scales::percent, limits = NULL,
+  expand = c(0.01, 0), oob = censor, na.value = NA_real_,
+  trans = "identity", position = "bottom", sec.axis = waiver())
+               
 
 Symbol	Meaning	              Example
+
  %d	day as a number (0-31)	01-31
+ 
  %a	abbreviated weekday	    Mon
+ 
  %A	unabbreviated weekday	  Monday
+ 
  %m	month (00-12)	          00-12
+ 
  %b	abbreviated month	      Jan
+ 
  %B	unabbreviated month	    January
+ 
  %y	2-digit year	          07
+ 
  %Y	4-digit year	          2007
+ 
 
 scale_color_manual(values = c("indianred3", 
                                 "cornflowerblue")) +
