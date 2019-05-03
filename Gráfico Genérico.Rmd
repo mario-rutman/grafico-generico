@@ -22,6 +22,11 @@ library(readr)
 library(DT)
 library(extrafont)
 library(colortools)
+library(RColorBrewer)
+library(wesanderson)
+library(ggsci)
+library(viridisLite)
+library(viridis)
 ```
 
 Dois comandos que fazem diferença: o primeiro coloca os dados em português brasileiro, para dias, meses, vírgula etc; o segundo retira a notação científica de números, quando são expressos por potências de 10.
@@ -110,9 +115,77 @@ labs(title = "Relationship between wages and experience",
   Em categoria empilhada coloca o label em cada uma delas.
   geom_text(aes(label = lbl), size = 3, position = position_stack(vjust = 0.5)) + 
   
-## Cor.
+## Cores.
 
-Para criar cores complementares esta função é fundamental: wheel("nome da cor", num = quantidade de cores complementares que desejamos). É do pacote colortools.
+Mostra todas as cores do RColorBrewer
+display.brewer.all()
+
+Para __ver__ um conjunto de cores de um pallete do RColorBrewer.
+
+No caso o Dark2 com 8 cores.
+
+display.brewer.pal(n = 8, name = 'Dark2')
+
+display.brewer.pal(n = 3, name = 'Set1')
+
+Para __saber__ o nome da cor.
+
+brewer.pal(n = 8, name = 'Dark2')
+
+brewer.pal(n = 3, name = 'Set1')
+
+Para __usar__ é assim.
+
+Para __preencher__ com cor (com o contorno de outra cor, para box dot plot por exemplo):
+
+scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"))
+
+Para __colorir__
+
+scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))
+
+Aqui você associa cores a nomes para preenchimento.
+
+scale_fill_manual(breaks = c("2", "1", "0.5"), 
+                       values=c("red", "blue", "green"))
+
+Aqui você associa cores a nomes para colorir objetos sem contorno.
+
+scale_color_manual(breaks = c("8", "6", "4"),
+                        values=c("red", "blue", "green"))
+
+Quando queremos usar os palletes do RColorBrewer.
+
+scale_fill_brewer(palette="Dark2")
+
+
+scale_color_brewer(palette="Set1")
+
+
+Outro pallete à disposição é o Wes Anserson.
+
+scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest"))
+
+scale_color_manual(values=wes_palette(n=3, name="GrandBudapest"))
+
+
+Para criar cores complementares esta função é fundamental. É do pacote colortools.
+wheel("nome da cor", num = quantidade de cores complementares que desejamos). 
+
+
+Explica tudo para usar o ggsi. Muito bom!
+
+https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
+
+cada scale_ color ou fill vem seguido de uma abreviatura do nome da publicação científica.
+
+scale_color_npg() ou scale_fill_npg()
+
+scale_color_lancet() ou scale_fill_lancet()
+
+scale_color_ucscgb() ou scale_fill_ucscgb() Adorei estas cores!!! Tem até as cores dos Simpsons.
+
+scale_color_simpsons() ou scale_fill_simpsons()
 
 
   
